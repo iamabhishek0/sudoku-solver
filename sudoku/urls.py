@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from sudokusolver.views import index
+from sudokusolver.views import index, custom
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name="home"),
-    # path('custom_solver', name="custom-solver"),
+    path('custom', custom, name="custom-solver"),
 ]

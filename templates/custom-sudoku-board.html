@@ -9,7 +9,7 @@
     <title>HTML Sudoku Board</title>
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style type="text/css">
 
         html, body {
@@ -54,6 +54,12 @@
             margin: 4px 2px;
             cursor: pointer;
             width: 19%;
+        }
+        .success-status
+        {
+            font-size: 25px;
+            align-content: center;
+            padding-top: 10px;
         }
 
         #cell-0,  #cell-1,  #cell-2  { border-top:    2px solid #000000; }
@@ -107,90 +113,99 @@
 
 <div class="container">
     <div class="form-inline">
-        <button class="button" type="button"  disabled style="background-color: #8b898f">Sudoku Board</button>
-        <button  class="button" type="button"  style="background-color: #333333"><a href="/custom" style="color: white!important;"> Sudoku Solver</a></button>
-    </div>
+        <button  class="button" type="button"  style="background-color: #333333"><a href="/" style="color: white!important;"> Sudoku Board</a></button>
+        <button class="button" type="button"  disabled style="background-color: #8b898f">Sudoku Solver</button>
 
+    </div>
     <br>
+
     <form id="gridform">
         <table id="grid">
-            {% for row in unsolved %}
+            {% for row in sudoku_grid %}
                 {% with i=forloop.counter0 %}
                     <tr>
+
                         {% for val in row %}
                             {% with j=forloop.counter0 %}
                                 {% if val == 0 %}
                                     <td><input id="cell-{% idx i j %}"  type="text"></td>
-                                {% else %}
-                                    <td><input id="cell-{% idx i j %}"  type="text" value="{{ val }}" disabled></td>
                                 {% endif %}
                             {% endwith %}
                         {% endfor %}
-
                     </tr>
                 {% endwith %}
             {% endfor %}
         </table>
+        {% if not valid %}
+            Enter valid Sudoku
+        {% endif %}
         <div class="form-inline">
-            <input class="button" type="button" value="Check" form="gridform" onclick="check()">
-            <input class="button" type="button" value="Solve" form="gridform" onclick="solve()">
+            <div>
+                <input class="button" type="button" value="Solve" form="gridform" onclick="solve()" style="float: left!important;">
+            </div>
+            <div id="succes-status" class="success-status">
+            </div>
         </div>
-
     </form>
-
-    <script>
-        function check() {
-            var solved = {{ solved }};
-            var unsolved = {{ unsolved }};
-
-            for(var i=0;i<9;i++)
-            {
-                for(var j=0;j<9;j++)
-                {
-                    if(unsolved[i][j]===0)
-                    {
-                        var idx = 9*i+j;
-                        var index = "cell-" + idx.toString();
-                        var val = +document.getElementById(index).value;
-                        var setVariable = (typeof val == 'number') ? val : 0;
-
-                        if(val!==solved[i][j])
-                        {
-                            document.getElementById(index).style.backgroundColor="#ff404c";
-                        }
-                        else
-                        {
-                            document.getElementById(index).style.backgroundColor="#8bff17";
-                        }
-                    }
-                }
-            }
-
-        }
-
-        function solve() {
-            var solved = {{ solved }};
-            var unsolved = {{ unsolved }};
-
-            for(var i=0;i<9;i++)
-            {
-                for(var j=0;j<9;j++)
-                {
-                    if(unsolved[i][j]===0)
-                    {
-                        var idx = 9*i+j;
-                        var index = "cell-" + idx.toString();
-                        var val = +document.getElementById(index).value;
-
-                        document.getElementById(index).value = solved[i][j];
-                    }
-                }
-            }
-
-        }
-
-    </script>
 </div>
+
+<script>
+
+    function solve() {
+        var x = [];
+        for(var i=0;i<9;i++)
+        {
+            for(var j=0;j<9;j++)
+            {
+                var idx = 9*i+j;
+
+                var index = "cell-" + idx.toString();
+                var val = +document.getElementById(index).value;
+                var setVariable = (typeof val == 'number') ? val : 0;
+
+                x.push({key:idx, value:setVariable});
+            }
+        }
+        var y = JSON.stringify(x);
+
+        {#alert(x);#}
+        $.ajax({
+            type: "POST",
+            url: "/custom",
+            dataType   : "json",
+            headers: {
+                charset:"UTF-8",
+                "X-CSRFToken": '{{ csrf_token }}',
+                "content-type": "application/json",
+            },
+            data: y,
+        })
+            .done(function (data) {
+                if(data['valid'])
+                {
+                    for(var i=0;i<9;i++)
+                    {
+                        for(var j=0;j<9;j++)
+                        {
+                            {
+                                var idx = 9*i+j;
+                                var index = "cell-" + idx.toString();
+                                var val = +document.getElementById(index).value;
+
+                                document.getElementById(index).value = data['sudoku_grid'][i][j];
+                            }
+                        }
+                    }
+                    $("#succes-status").append("Voila!");
+                }
+                else
+                {
+                    $("#succes-status").append("Sudoku is Invalid! :(");
+                }
+            });
+    }
+</script>
+
 
 </body>
 </html>
