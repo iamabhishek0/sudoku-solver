@@ -1,9 +1,10 @@
 <!-- ABOUT THE PROJECT -->
-## Sudoku Solver
+## [Sudoku Solver](https://custom-sudoku-solver.herokuapp.com/)
 
-[![Product Name Screen Shot][product-screenshot]](https://custom-sudoku-solver)
+[![Product Name Screen Shot][product-screenshot]](https://custom-sudoku-solver.herokuapp.com/)
 
-Sudoku Solver is a 9x9 Standard Sudoku Game. It's custom solver can also any given valid sudoku.
+[Sudoku Solver](https://custom-sudoku-solver.herokuapp.com/) is a 9x9 Standard Sudoku Game. It's custom solver can also any given valid sudoku.
+Deployed Version of this Game is [here](https://custom-sudoku-solver.herokuapp.com/).
 
 Features:
 * In the Sudoku Solver, user can fill their own unsolved puzzle and get the solved puzzle.
@@ -22,4 +23,5 @@ Features:
 [iamabhishek0](https://github.com/iamabhishek0)
 
 <!-- MARKDOWN LINKS & IMAGES -->
+[product-url]: https://custom-sudoku-solver.herokuapp.com/
 [product-screenshot]: templates/images/sudoku-solver.png
